@@ -1,58 +1,226 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Docker Learning Platform (Laravel)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This project is a modern educational website built with Laravel + Blade + TailwindCSS to teach Docker concepts in a structured, beginner-friendly way, with a special focus on real Laravel Docker workflows.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Project Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The platform is designed around structured lessons and supporting pages:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Home page introducing the learning journey
+- Learn section with topic sidebar and lesson detail pages
+- Roadmap page showing beginner to advanced progression
+- Cheatsheet page for quick command and environment reference
+- Project examples page with practical compose snippets
 
-## Learning Laravel
+All content is served from an internal structured repository (`LessonRepository`) so lessons are easy to maintain and expand.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Tech Stack
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+- Laravel 13
+- Blade templates
+- TailwindCSS (via Vite when available, CDN fallback if build assets are missing)
+- PHP 8.3+
 
-## Agentic Development
+> Docker infrastructure files are left untouched by this feature implementation.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
+
+## Routes and Pages
+
+| Route | Purpose |
+|---|---|
+| `/` | Home page with hero, Docker intro, path preview, benefits, CTA |
+| `/learn` | Main lessons index with sticky sidebar and topic cards |
+| `/learn/{slug}` | Full lesson template page |
+| `/roadmap` | Structured learning path with UI-only completion toggles |
+| `/cheatsheet` | Quick commands, ENV variables, and compose patterns |
+| `/projects` | Real-world Docker setup cards and snippets |
+
+Routes are defined in `routes/web.php` and handled by `LearningController`.
+
+---
+
+## Core Architecture
+
+### 1) Controller Layer
+
+`app/Http/Controllers/LearningController.php`
+
+Responsible for rendering all educational pages:
+
+- `home()`
+- `learnIndex()`
+- `lesson($slug)`
+- `roadmap()`
+- `cheatsheet()`
+- `projects()`
+
+### 2) Content Source Layer
+
+`app/Support/LessonRepository.php`
+
+Centralized static data source for:
+
+- lesson list
+- lesson detail content
+- roadmap groups and steps
+- cheatsheet items
+- project examples
+
+This avoids overcomplicated backend/database setup while still providing a clean internal content model.
+
+### 3) View Layer
+
+`resources/views/layouts/app.blade.php` provides:
+
+- global navbar
+- dark mode toggle
+- copy-to-clipboard behavior for code blocks
+- Vite asset loading with fallback
+
+Feature views:
+
+- `home.blade.php`
+- `learn/index.blade.php`
+- `learn/show.blade.php`
+- `roadmap.blade.php`
+- `cheatsheet.blade.php`
+- `projects.blade.php`
+
+---
+
+## Lesson Data Structure
+
+Each lesson follows a structured template with fields such as:
+
+- `id`
+- `title`
+- `slug`
+- `category`
+- `intro`
+- `key_concepts`
+- `definitions`
+- `highlights`
+- `comparison` (headers + rows)
+- `commands`
+- `internal_steps`
+- `laravel_connection`
+- `common_mistakes`
+- `summary`
+- `next_slug`
+
+This structure powers consistent rendering across all lesson pages.
+
+---
+
+## Lesson Page Features (`/learn/{slug}`)
+
+Every lesson includes:
+
+1. Title
+2. Introduction box
+3. Key concepts + definitions + highlighted keywords
+4. Visual comparison section (table format)
+5. Code examples with copy button
+6. "How it works internally" step-by-step block
+7. Laravel connection section
+8. Common mistakes section
+9. Summary box
+10. Next lesson button (when available)
+
+---
+
+## Frontend UX Features
+
+- Responsive layout with developer-style dark UI
+- Sticky left sidebar on learning pages
+- Global navigation across all sections
+- Copy-to-clipboard for command/code snippets
+- Dark mode toggle with `localStorage` persistence
+- Roadmap completion state saved in `localStorage` (UI-only)
+
+---
+
+## Content Source Note
+
+The original goal references `src/docker.docx` as raw source content.  
+In this workspace, that file was not present at implementation time, so structured educational content was authored directly into `LessonRepository`.
+
+If you add `src/docker.docx`, you can:
+
+1. Extract text into structured topic blocks
+2. Replace corresponding lesson fields in `LessonRepository`
+3. Keep the same routes/views without architectural changes
+
+---
+
+## Setup and Run
+
+From the `src` directory:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+If using Vite assets:
 
-## Contributing
+```bash
+npm install
+npm run build
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Run app:
 
-## Code of Conduct
+```bash
+php artisan serve --host=0.0.0.0 --port=8000
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Open:
 
-## Security Vulnerabilities
+- `http://localhost:8000`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
+
+## Vite Manifest Fallback
+
+To avoid `ViteManifestNotFoundException` in environments without built assets, the layout checks for:
+
+- `public/build/manifest.json` or
+- `public/hot`
+
+If neither exists, it falls back to Tailwind CDN so pages remain available.
+
+---
+
+## How to Add a New Lesson
+
+1. Open `app/Support/LessonRepository.php`
+2. Add a new `self::lesson(...)` entry
+3. Set `slug` and `next_slug` correctly
+4. Optionally include it in `topicPreview()`
+5. Add it to `roadmap()` if needed
+
+No route or controller changes are required unless you introduce new page types.
+
+---
+
+## Customization Ideas
+
+- Add search/filter for lessons
+- Add markdown-based content files instead of inline arrays
+- Add admin CMS later (if content team editing is needed)
+- Add lesson progress per user after authentication is introduced
+- Add tests for route responses and key view rendering
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is built on Laravel (MIT).  
+Application content and custom code follow your repository policy.
