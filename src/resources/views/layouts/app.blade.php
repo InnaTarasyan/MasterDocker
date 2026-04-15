@@ -10,7 +10,7 @@
         <script src="https://cdn.tailwindcss.com"></script>
     @endif
 </head>
-<body class="min-h-full bg-slate-100 text-slate-800 antialiased">
+<body class="min-h-full bg-[#f1f1f1] text-slate-800 antialiased">
     @php
         $links = [
             ['label' => 'Home', 'route' => 'home'],
@@ -22,37 +22,37 @@
     @endphp
 
     <div class="min-h-screen">
-        <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
+        <header class="sticky top-0 z-50 border-b border-[#1d1f29] bg-[#282A35] shadow-sm">
             <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-                <a href="{{ route('home') }}" class="text-lg font-bold tracking-tight text-sky-700 dark:text-sky-300">Docker Laravel Academy</a>
-                <button id="menuToggle" type="button" class="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 lg:hidden dark:border-slate-700 dark:text-slate-200">
+                <a href="{{ route('home') }}" class="text-lg font-bold tracking-tight text-white">Docker Laravel Academy</a>
+                <button id="menuToggle" type="button" class="rounded-md border border-slate-500 px-3 py-2 text-sm font-medium text-slate-100 lg:hidden">
                     Menu
                 </button>
                 <nav id="topNav" class="hidden items-center gap-1 text-sm lg:flex">
                     @foreach ($links as $link)
                         <a
                             href="{{ route($link['route']) }}"
-                            class="rounded-md px-3 py-2 font-medium transition {{ request()->routeIs($link['route']) ? 'bg-sky-100 text-sky-700 dark:bg-slate-800 dark:text-sky-300' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800' }}"
+                            class="rounded-md px-3 py-2 font-medium transition {{ request()->routeIs($link['route']) ? 'bg-[#04AA6D] text-white' : 'text-slate-100 hover:bg-[#3a3d4a]' }}"
                         >
                             {{ $link['label'] }}
                         </a>
                     @endforeach
-                    <button id="darkModeToggle" class="ml-1 rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800" type="button">
+                    <button id="darkModeToggle" class="ml-1 rounded-md border border-slate-500 px-3 py-2 text-xs font-semibold text-slate-100 hover:bg-[#3a3d4a]" type="button">
                         Theme
                     </button>
                 </nav>
             </div>
-            <div id="mobileNav" class="hidden border-t border-slate-200 bg-white px-4 py-3 lg:hidden dark:border-slate-800 dark:bg-slate-950">
+            <div id="mobileNav" class="hidden border-t border-[#3a3d4a] bg-[#282A35] px-4 py-3 lg:hidden">
                 <div class="grid gap-2 text-sm">
                     @foreach ($links as $link)
                         <a
                             href="{{ route($link['route']) }}"
-                            class="rounded-md px-3 py-2 font-medium {{ request()->routeIs($link['route']) ? 'bg-sky-100 text-sky-700 dark:bg-slate-800 dark:text-sky-300' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800' }}"
+                            class="rounded-md px-3 py-2 font-medium {{ request()->routeIs($link['route']) ? 'bg-[#04AA6D] text-white' : 'text-slate-100 hover:bg-[#3a3d4a]' }}"
                         >
                             {{ $link['label'] }}
                         </a>
                     @endforeach
-                    <button id="darkModeToggleMobile" class="rounded-md border border-slate-300 px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800" type="button">
+                    <button id="darkModeToggleMobile" class="rounded-md border border-slate-500 px-3 py-2 text-left text-xs font-semibold text-slate-100 hover:bg-[#3a3d4a]" type="button">
                         Toggle theme
                     </button>
                 </div>
@@ -60,21 +60,21 @@
         </header>
 
         <div class="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:px-8">
-            <aside class="h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24 dark:border-slate-800 dark:bg-slate-900">
-                <h2 class="text-xs font-semibold uppercase tracking-[0.16em] text-sky-700 dark:text-sky-300">Learning Menu</h2>
+            <aside class="h-fit rounded-lg border border-slate-300 bg-white p-5 shadow-sm lg:sticky lg:top-24">
+                <h2 class="text-xs font-semibold uppercase tracking-[0.16em] text-[#0b7a55]">Learning Menu</h2>
                 <ul class="mt-4 space-y-1 text-sm">
                     @foreach ($links as $link)
                         <li>
                             <a
                                 href="{{ route($link['route']) }}"
-                                class="block rounded-md px-3 py-2 {{ request()->routeIs($link['route']) ? 'bg-sky-100 font-semibold text-sky-700 dark:bg-slate-800 dark:text-sky-300' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800' }}"
+                                class="block rounded-md px-3 py-2 {{ request()->routeIs($link['route']) ? 'bg-[#e7f7f0] font-semibold text-[#0b7a55]' : 'text-slate-700 hover:bg-slate-100' }}"
                             >
                                 {{ $link['label'] }}
                             </a>
                         </li>
                     @endforeach
                 </ul>
-                <div class="mt-6 rounded-lg bg-slate-50 p-3 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                <div class="mt-6 rounded-lg bg-[#f7f9fa] p-3 text-xs text-slate-600">
                     Follow the lessons in order for a smoother learning path, then use the cheatsheet during daily development.
                 </div>
             </aside>
