@@ -3,29 +3,29 @@
 @section('title', 'Docker Roadmap')
 
 @section('content')
-    <section>
-        <h1 class="text-3xl font-bold">Docker Learning Roadmap</h1>
-        <p class="mt-2 text-slate-300">Track your progress from beginner concepts to production-ready Laravel Docker architecture.</p>
+    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Docker Learning Roadmap</h1>
+        <p class="mt-2 text-slate-600 dark:text-slate-300">Track your progress from beginner concepts to production-ready Laravel Docker architecture.</p>
     </section>
 
-    <div class="mt-8 space-y-6">
+    <div class="space-y-6">
         @foreach ($roadmap as $group)
-            <section class="rounded-xl border border-slate-800 bg-slate-900/70 p-6">
-                <h2 class="text-xl font-semibold text-cyan-300">{{ $group['level'] }}</h2>
+            <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <h2 class="text-xl font-semibold text-sky-700 dark:text-sky-300">{{ $group['level'] }}</h2>
                 <div class="mt-4 grid gap-4">
                     @foreach ($group['steps'] as $step)
-                        <article class="rounded-lg border border-slate-700 bg-slate-800/50 p-4">
+                        <article class="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/70">
                             <div class="flex flex-wrap items-center justify-between gap-3">
                                 <div>
-                                    <h3 class="font-semibold text-white">{{ $step['title'] }}</h3>
-                                    <p class="mt-1 text-sm text-slate-300">{{ $step['description'] }}</p>
+                                    <h3 class="font-semibold text-slate-900 dark:text-white">{{ $step['title'] }}</h3>
+                                    <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">{{ $step['description'] }}</p>
                                 </div>
-                                <label class="inline-flex items-center gap-2 text-sm text-slate-300">
-                                    <input type="checkbox" class="roadmap-status h-4 w-4 rounded border-slate-600 bg-slate-900" data-roadmap-id="{{ $step['slug'] }}">
+                                <label class="inline-flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+                                    <input type="checkbox" class="roadmap-status h-4 w-4 rounded border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-900" data-roadmap-id="{{ $step['slug'] }}">
                                     Completed
                                 </label>
                             </div>
-                            <a href="{{ route('learn.show', $step['slug']) }}" class="mt-3 inline-flex text-sm font-medium text-cyan-300 hover:text-cyan-200">Go to lesson</a>
+                            <a href="{{ route('learn.show', $step['slug']) }}" class="mt-3 inline-flex text-sm font-medium text-sky-700 hover:text-sky-600 dark:text-sky-300">Go to lesson</a>
                         </article>
                     @endforeach
                 </div>
