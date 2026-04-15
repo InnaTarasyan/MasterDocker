@@ -5,7 +5,7 @@
 @section('content')
     <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Docker Cheatsheet</h1>
-        <p class="mt-2 text-slate-600 dark:text-slate-300">Quick reference for daily Docker and Laravel container workflow.</p>
+        <p class="mt-2 text-slate-600 dark:text-slate-300">Extended reference for daily Docker workflows, Laravel container environment setup, and compose best practices.</p>
     </section>
 
     <div class="grid gap-6 lg:grid-cols-3">
@@ -46,4 +46,23 @@
             </ul>
         </section>
     </div>
+
+    <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <h2 class="text-lg font-semibold text-sky-700 dark:text-sky-300">Sources</h2>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Curated from official Docker and Laravel documentation.</p>
+        <ul class="mt-4 list-inside list-disc space-y-2 text-slate-600 dark:text-slate-300">
+            @foreach ($cheatsheet['references'] as $reference)
+                <li>
+                    <a
+                        href="{{ $reference['url'] }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-sky-700 underline decoration-sky-400/60 underline-offset-2 hover:text-sky-800 dark:text-sky-300 dark:hover:text-sky-200"
+                    >
+                        {{ $reference['title'] }}
+                    </a>
+                </li>
+            @endforeach
+        </ul>
+    </section>
 @endsection
