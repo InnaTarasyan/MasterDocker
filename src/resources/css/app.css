@@ -9,3 +9,20 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+@layer base {
+    body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        line-height: 1.5;
+    }
+
+    h1,
+    h2,
+    h3 {
+        letter-spacing: -0.01em;
+    }
+
+    a {
+        transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    }
+}
