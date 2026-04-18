@@ -3,20 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Support\LessonRepository;
+use Illuminate\Support\Facades\Gate;
 
 class LearningController extends Controller
 {
     public function home()
     {
+        $topicPreview = collect(LessonRepository::topicPreview())
+            ->map(function (array $lesson): array {
+                $lesson['can_view'] = Gate::allows('view-lesson', $lesson);
+
+                return $lesson;
+            })
+            ->values()
+            ->all();
+
         return view('home', [
-            'topicPreview' => LessonRepository::topicPreview(),
+            'topicPreview' => $topicPreview,
         ]);
     }
 
     public function learnIndex()
     {
+        $lessons = collect(LessonRepository::all())
+            ->map(function (array $lesson): array {
+                $lesson['can_view'] = Gate::allows('view-lesson', $lesson);
+
+                return $lesson;
+            })
+            ->values()
+            ->all();
+
         return view('learn.index', [
-            'lessons' => LessonRepository::all(),
+            'lessons' => $lessons,
             'activeSlug' => null,
         ]);
     }
@@ -26,6 +45,7 @@ class LearningController extends Controller
         $lesson = LessonRepository::findBySlug($slug);
 
         abort_if(! $lesson, 404);
+        Gate::authorize('view-lesson', $lesson);
 
         return view('learn.show', [
             'lesson' => $lesson,
@@ -37,8 +57,23 @@ class LearningController extends Controller
 
     public function roadmap()
     {
+        $roadmap = collect(LessonRepository::roadmap())
+            ->map(function (array $group): array {
+                $group['steps'] = collect($group['steps'])
+                    ->map(function (array $step): array {
+                        $lesson = LessonRepository::findBySlug($step['slug']);
+                        $step['can_view'] = $lesson ? Gate::allows('view-lesson', $lesson) : false;
+
+                        return $step;
+                    })
+                    ->all();
+
+                return $group;
+            })
+            ->all();
+
         return view('roadmap', [
-            'roadmap' => LessonRepository::roadmap(),
+            'roadmap' => $roadmap,
         ]);
     }
 

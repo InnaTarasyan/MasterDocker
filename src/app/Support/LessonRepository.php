@@ -4,6 +4,20 @@ namespace App\Support;
 
 class LessonRepository
 {
+    public static function advancedLessonSlugs(): array
+    {
+        $advancedGroup = collect(self::roadmap())->firstWhere('level', 'Advanced');
+
+        return collect($advancedGroup['steps'] ?? [])
+            ->pluck('slug')
+            ->all();
+    }
+
+    public static function isAdvancedLesson(string $slug): bool
+    {
+        return in_array($slug, self::advancedLessonSlugs(), true);
+    }
+
     public static function all(): array
     {
         return [

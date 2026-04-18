@@ -25,7 +25,13 @@
                                     Completed
                                 </label>
                             </div>
-                            <a href="{{ route('learn.show', $step['slug']) }}" class="mt-3 inline-flex text-sm font-medium text-sky-700 hover:text-sky-600 dark:text-sky-300">Go to lesson</a>
+                            @if ($step['can_view'])
+                                <a href="{{ route('learn.show', $step['slug']) }}" class="mt-3 inline-flex text-sm font-medium text-sky-700 hover:text-sky-600 dark:text-sky-300">Go to lesson</a>
+                            @else
+                                <p class="mt-3 inline-flex rounded bg-amber-100 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-amber-700">
+                                    Locked (sign in to unlock advanced lessons)
+                                </p>
+                            @endif
                         </article>
                     @endforeach
                 </div>
