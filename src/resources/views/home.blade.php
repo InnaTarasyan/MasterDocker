@@ -37,10 +37,20 @@
         </div>
         <div class="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             @foreach ($topicPreview as $topic)
-                <a href="{{ route('learn.show', $topic['slug']) }}" class="group rounded-lg border border-slate-300 bg-white p-5 shadow-sm transition hover:border-[#04AA6D] hover:-translate-y-0.5">
-                    <h3 class="font-semibold text-slate-900 group-hover:text-[#0b7a55]">{{ $topic['title'] }}</h3>
-                    <p class="mt-2 text-sm text-slate-600">{{ $topic['summary'] }}</p>
-                </a>
+                @if ($topic['can_view'])
+                    <a href="{{ route('learn.show', $topic['slug']) }}" class="group rounded-lg border border-slate-300 bg-white p-5 shadow-sm transition hover:border-[#04AA6D] hover:-translate-y-0.5">
+                        <h3 class="font-semibold text-slate-900 group-hover:text-[#0b7a55]">{{ $topic['title'] }}</h3>
+                        <p class="mt-2 text-sm text-slate-600">{{ $topic['summary'] }}</p>
+                    </a>
+                @else
+                    <article class="rounded-lg border border-slate-200 bg-slate-100 p-5 shadow-sm opacity-85">
+                        <div class="flex items-center justify-between gap-2">
+                            <h3 class="font-semibold text-slate-700">{{ $topic['title'] }}</h3>
+                            <span class="rounded bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">Locked</span>
+                        </div>
+                        <p class="mt-2 text-sm text-slate-500">{{ $topic['summary'] }}</p>
+                    </article>
+                @endif
             @endforeach
         </div>
     </section>
