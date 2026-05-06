@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use Illuminate\Support\Facades\Cache;
+
 class LessonRepository
 {
     public static function advancedLessonSlugs(): array
@@ -20,7 +22,7 @@ class LessonRepository
 
     public static function all(): array
     {
-        return [
+        return Cache::rememberForever('lessons.all', fn (): array => [
             self::lesson(
                 'Introduction',
                 'introduction',
@@ -365,7 +367,7 @@ class LessonRepository
                 'Correct Docker networking removes connectivity guesswork and keeps Laravel service communication reliable.',
                 null
             ),
-        ];
+        ]);
     }
 
     public static function topicPreview(): array
@@ -398,7 +400,7 @@ class LessonRepository
 
     public static function roadmap(): array
     {
-        return [
+        return Cache::rememberForever('lessons.roadmap', fn (): array => [
             [
                 'level' => 'Beginner',
                 'steps' => [
@@ -422,12 +424,12 @@ class LessonRepository
                     ['title' => 'Production deployment', 'description' => 'Push tagged images and deploy consistently.', 'slug' => 'docker-hub-registry'],
                 ],
             ],
-        ];
+        ]);
     }
 
     public static function cheatsheet(): array
     {
-        return [
+        return Cache::rememberForever('lessons.cheatsheet', fn (): array => [
             'docker_commands' => [
                 'docker --version',
                 'docker info',
@@ -572,12 +574,12 @@ class LessonRepository
                     'url' => 'https://docs.docker.com/guides/frameworks/laravel/development-setup/',
                 ],
             ],
-        ];
+        ]);
     }
 
     public static function projects(): array
     {
-        return [
+        return Cache::rememberForever('lessons.projects', fn (): array => [
             [
                 'title' => 'Laravel + MySQL Docker Setup',
                 'description' => 'Minimal development stack with PHP app container and MySQL persistence.',
@@ -593,7 +595,7 @@ class LessonRepository
                 'description' => 'Application, reverse proxy, database, cache, and worker services.',
                 'snippet' => "services:\n  app:\n    image: registry/laravel-app:v1.0.0\n  nginx:\n    image: nginx:alpine\n  mysql:\n    image: mysql:8.4\n  redis:\n    image: redis:7-alpine\n  worker:\n    image: registry/laravel-app:v1.0.0\n    command: php artisan queue:work",
             ],
-        ];
+        ]);
     }
 
     private static function lesson(

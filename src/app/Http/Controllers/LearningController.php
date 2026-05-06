@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Lesson;
 use App\Support\LessonRepository;
 use Illuminate\Support\Facades\Gate;
 
@@ -11,7 +12,7 @@ class LearningController extends Controller
     {
         $topicPreview = collect(LessonRepository::topicPreview())
             ->map(function (array $lesson): array {
-                $lesson['can_view'] = Gate::allows('view-lesson', $lesson);
+                $lesson['can_view'] = Gate::allows('view', Lesson::fromArray($lesson));
 
                 return $lesson;
             })
@@ -27,7 +28,7 @@ class LearningController extends Controller
     {
         $lessons = collect(LessonRepository::all())
             ->map(function (array $lesson): array {
-                $lesson['can_view'] = Gate::allows('view-lesson', $lesson);
+                $lesson['can_view'] = Gate::allows('view', Lesson::fromArray($lesson));
 
                 return $lesson;
             })
@@ -40,18 +41,15 @@ class LearningController extends Controller
         ]);
     }
 
-    public function lesson(string $slug)
+    public function lesson(Lesson $lesson)
     {
-        $lesson = LessonRepository::findBySlug($slug);
-
-        abort_if(! $lesson, 404);
-        Gate::authorize('view-lesson', $lesson);
+        $nextLesson = $lesson->next_slug ? LessonRepository::findBySlug($lesson->next_slug) : null;
 
         return view('learn.show', [
-            'lesson' => $lesson,
+            'lesson' => $lesson->toArray(),
             'lessons' => LessonRepository::all(),
-            'activeSlug' => $slug,
-            'nextLesson' => $lesson['next_slug'] ? LessonRepository::findBySlug($lesson['next_slug']) : null,
+            'activeSlug' => $lesson->slug,
+            'nextLesson' => $nextLesson,
         ]);
     }
 
@@ -62,7 +60,9 @@ class LearningController extends Controller
                 $group['steps'] = collect($group['steps'])
                     ->map(function (array $step): array {
                         $lesson = LessonRepository::findBySlug($step['slug']);
-                        $step['can_view'] = $lesson ? Gate::allows('view-lesson', $lesson) : false;
+                        $step['can_view'] = $lesson
+                            ? Gate::allows('view', Lesson::fromArray($lesson))
+                            : false;
 
                         return $step;
                     })

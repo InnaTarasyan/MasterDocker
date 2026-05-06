@@ -14,7 +14,12 @@
             @foreach ($lessons as $lesson)
                 @if ($lesson['can_view'])
                     <a href="{{ route('learn.show', $lesson['slug']) }}" class="rounded-lg border border-slate-300 bg-slate-50 p-5 transition hover:border-[#04AA6D] hover:bg-white">
-                        <h3 class="font-semibold text-slate-900">{{ $lesson['title'] }}</h3>
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="font-semibold text-slate-900">{{ $lesson['title'] }}</h3>
+                            @advancedLesson($lesson)
+                                <span class="rounded bg-indigo-100 px-2 py-1 text-xs font-semibold text-indigo-700">Advanced</span>
+                            @endadvancedLesson
+                        </div>
                         <p class="mt-2 text-sm text-slate-600">{{ $lesson['intro'] }}</p>
                     </a>
                 @else
