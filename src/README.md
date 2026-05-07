@@ -1,226 +1,394 @@
-# Docker Learning Platform (Laravel)
+# Docker Learning Platform - Complete Technology Guide
 
-This project is a modern educational website built with Laravel + Blade + TailwindCSS to teach Docker concepts in a structured, beginner-friendly way, with a special focus on real Laravel Docker workflows.
+This project is an educational web platform built to teach Docker through real Laravel workflows, practical examples, and structured learning paths. It combines modern PHP backend engineering, containerized infrastructure, and fast frontend tooling into a single developer-friendly product.
 
----
-
-## Project Overview
-
-The platform is designed around structured lessons and supporting pages:
-
-- Home page introducing the learning journey
-- Learn section with topic sidebar and lesson detail pages
-- Roadmap page showing beginner to advanced progression
-- Cheatsheet page for quick command and environment reference
-- Project examples page with practical compose snippets
-
-All content is served from an internal structured repository (`LessonRepository`) so lessons are easy to maintain and expand.
+The goal of this README is to describe all major technologies used in this website in depth, explain why they matter, and provide a practical map for contributors who want to extend the platform.
 
 ---
 
-## Tech Stack
+## Vision and Product Direction
 
-- Laravel 13
-- Blade templates
-- TailwindCSS (via Vite when available, CDN fallback if build assets are missing)
-- PHP 8.3+
+The platform is designed as a learning system, not just a static site.  
+It focuses on:
 
-> Docker infrastructure files are left untouched by this feature implementation.
+- clear topic progression from beginner to advanced;
+- reusable lesson architecture;
+- practical command snippets for real development;
+- smooth local setup using Docker;
+- scalable foundation for future user progress tracking and analytics.
 
----
-
-## Routes and Pages
-
-| Route | Purpose |
-|---|---|
-| `/` | Home page with hero, Docker intro, path preview, benefits, CTA |
-| `/learn` | Main lessons index with sticky sidebar and topic cards |
-| `/learn/{slug}` | Full lesson template page |
-| `/roadmap` | Structured learning path with UI-only completion toggles |
-| `/cheatsheet` | Quick commands, ENV variables, and compose patterns |
-| `/projects` | Real-world Docker setup cards and snippets |
-
-Routes are defined in `routes/web.php` and handled by `LearningController`.
+It is intentionally built with production-grade technologies even though the current product can run as a content-driven educational app. That decision makes future upgrades much easier (auth, personalization, dashboards, test automation, API expansion, and queue-based background processing).
 
 ---
 
-## Core Architecture
+## High-Level Technology Stack
 
-### 1) Controller Layer
+### Core Application Layer
 
-`app/Http/Controllers/LearningController.php`
+- **PHP 8.3+ compatibility target in app dependencies**
+- **Laravel 13** framework
+- **Blade** server-side templating
+- **Service provider architecture** for clean dependency registration
+- **Repository pattern** for content access abstraction
+- **Policy-based authorization** for future permission control
+- **Events + listeners + jobs** for async analytics workflows
 
-Responsible for rendering all educational pages:
+### Frontend and Build Layer
 
-- `home()`
-- `learnIndex()`
-- `lesson($slug)`
-- `roadmap()`
-- `cheatsheet()`
-- `projects()`
+- **Tailwind CSS v4**
+- **Vite v8**
+- **Laravel Vite Plugin**
+- **@tailwindcss/vite integration**
+- **Axios** available for client-side requests
+- **Concurrently** for multi-process local dev workflows
 
-### 2) Content Source Layer
+### Infrastructure and Runtime Layer
 
-`app/Support/LessonRepository.php`
+- **Docker Compose**
+- **PHP-FPM container**
+- **Nginx reverse proxy container**
+- **MySQL 8 container**
+- **Named Docker volume** for persistent database storage
 
-Centralized static data source for:
+### Quality and DX Tooling
 
-- lesson list
-- lesson detail content
-- roadmap groups and steps
-- cheatsheet items
-- project examples
-
-This avoids overcomplicated backend/database setup while still providing a clean internal content model.
-
-### 3) View Layer
-
-`resources/views/layouts/app.blade.php` provides:
-
-- global navbar
-- dark mode toggle
-- copy-to-clipboard behavior for code blocks
-- Vite asset loading with fallback
-
-Feature views:
-
-- `home.blade.php`
-- `learn/index.blade.php`
-- `learn/show.blade.php`
-- `roadmap.blade.php`
-- `cheatsheet.blade.php`
-- `projects.blade.php`
+- **PHPUnit 12** for testing
+- **Laravel Pint** for code style
+- **Laravel Pail** for log tailing
+- **Laravel Tinker** for REPL productivity
+- **Collision** for readable CLI errors
+- **FakerPHP + Mockery** for realistic and maintainable tests
 
 ---
 
-## Lesson Data Structure
+## Backend Technologies in Detail
 
-Each lesson follows a structured template with fields such as:
+## Laravel 13
 
-- `id`
-- `title`
-- `slug`
-- `category`
-- `intro`
-- `key_concepts`
-- `definitions`
-- `highlights`
-- `comparison` (headers + rows)
-- `commands`
-- `internal_steps`
-- `laravel_connection`
-- `common_mistakes`
-- `summary`
-- `next_slug`
+Laravel 13 is the backbone of this project. It provides:
 
-This structure powers consistent rendering across all lesson pages.
+- a clean request lifecycle and routing system;
+- expressive controllers and middleware;
+- dependency injection container;
+- event-driven architecture;
+- queue processing support;
+- policy and authorization primitives;
+- ergonomic testing workflow.
+
+For an educational platform, this is powerful because the application can start as a content-first website and evolve into a richer SaaS-like system without re-platforming.
+
+## PHP 8.3 Ecosystem
+
+The Composer configuration targets modern PHP (`^8.3`) and the Docker image runs PHP-FPM 8.4, giving access to modern language improvements and runtime performance.  
+This keeps the project future-ready while staying compatible with current Laravel ecosystem standards.
+
+## Service Container and Contract-Driven Design
+
+The project structure includes:
+
+- `LessonRepositoryInterface`
+- service provider wiring in `LearningServiceProvider`
+- concrete implementations such as `CachedLessonRepository`
+
+This is a strong architectural choice because it enables:
+
+- easy testing through mocks/fakes;
+- drop-in implementation swaps;
+- cache integration without changing controller logic;
+- separation between business intent and implementation details.
+
+## Repository Pattern for Lesson Domain
+
+Lessons are represented as domain-level content objects and served through repository abstractions.  
+Even when data starts as in-memory/static structures, this pattern prepares the app for future backends:
+
+- relational DB storage;
+- headless CMS adapters;
+- Markdown/JSON content pipelines;
+- external APIs.
+
+## Event-Driven Analytics Pipeline
+
+The codebase includes dedicated components for analytics:
+
+- `LessonViewed` event
+- `QueueLessonViewAnalytics` listener
+- `RecordLessonViewAnalytics` job
+
+This pattern is excellent for scale and reliability:
+
+- user-facing requests stay fast;
+- analytics is processed asynchronously;
+- heavy writes and external calls can be retried safely;
+- future telemetry expansion is straightforward.
+
+## Authorization with Policies
+
+`LessonPolicy` exists to enforce access decisions close to the domain model.  
+Even if policy rules are minimal now, introducing policy architecture early is a best practice because it prevents auth logic from leaking into controllers/views.
+
+## Learning Progress Service Layer
+
+`LearningProgressService` suggests business logic extraction beyond controllers.  
+This supports cleaner code boundaries:
+
+- controllers orchestrate;
+- services encapsulate logic;
+- repositories provide data;
+- events/jobs handle side effects.
 
 ---
 
-## Lesson Page Features (`/learn/{slug}`)
+## Frontend Technologies in Detail
 
-Every lesson includes:
+## Blade Templating Engine
 
-1. Title
-2. Introduction box
-3. Key concepts + definitions + highlighted keywords
-4. Visual comparison section (table format)
-5. Code examples with copy button
-6. "How it works internally" step-by-step block
-7. Laravel connection section
-8. Common mistakes section
-9. Summary box
-10. Next lesson button (when available)
+Blade is used for server-rendered page composition and reusable layout primitives.  
+Why it fits this platform:
+
+- highly SEO-friendly rendered HTML;
+- minimal frontend complexity for content-heavy pages;
+- direct integration with Laravel routing and localization capabilities;
+- simple componentization when UI grows.
+
+## Tailwind CSS v4
+
+Tailwind v4 enables fast utility-based styling with a consistent design language.  
+For educational UI screens (roadmaps, sidebars, code blocks, highlight cards), utility classes accelerate development and keep styling predictable.
+
+Key benefits in this project:
+
+- responsive layouts for content pages;
+- quick dark-theme consistency;
+- maintainable UI tokens through utility conventions;
+- reduced custom CSS overhead.
+
+## Vite 8 + Laravel Vite Plugin
+
+Vite powers both development and production builds:
+
+- near-instant hot reload during local development;
+- optimized production bundles;
+- modern module graph performance.
+
+Laravel Vite Plugin ensures smooth framework integration for asset loading and cache-busted output.
+
+## @tailwindcss/vite Integration
+
+The build pipeline uses the official Tailwind + Vite bridge, which simplifies styling integration and keeps compatibility with latest Tailwind architecture.
+
+## Axios
+
+Axios is available in dev dependencies for HTTP interactions.  
+Even if current pages are mostly server-rendered, Axios unlocks:
+
+- progressive enhancement;
+- async UI widgets;
+- analytics/telemetry pings;
+- future SPA-like islands.
+
+## Browser UX Enhancements
+
+The platform includes practical UX touches:
+
+- dark mode toggle with local persistence;
+- copy-to-clipboard actions for code/commands;
+- sticky learning navigation behavior;
+- responsive educational page structure.
+
+These features improve real learning usability, especially for command-heavy technical content.
 
 ---
 
-## Frontend UX Features
+## Infrastructure and DevOps Technologies
 
-- Responsive layout with developer-style dark UI
-- Sticky left sidebar on learning pages
-- Global navigation across all sections
-- Copy-to-clipboard for command/code snippets
-- Dark mode toggle with `localStorage` persistence
-- Roadmap completion state saved in `localStorage` (UI-only)
+## Docker Compose Orchestration
+
+`docker-compose.yml` defines a multi-container environment that mirrors realistic web deployment topology:
+
+- `app`: custom PHP-FPM runtime
+- `nginx`: web server + reverse proxy
+- `mysql`: relational data storage
+
+This setup gives contributors a consistent, reproducible local environment regardless of host machine setup.
+
+## Custom PHP-FPM Image
+
+The custom Dockerfile:
+
+- starts from `php:8.4-fpm`;
+- installs required system libraries;
+- installs common PHP extensions (`pdo_mysql`, `mbstring`, `bcmath`, `gd`, etc.);
+- copies Composer from official Composer image.
+
+This balances flexibility and reproducibility: you control runtime dependencies while keeping image setup transparent.
+
+## Nginx as HTTP Edge
+
+Nginx handles incoming HTTP traffic and forwards PHP requests to PHP-FPM.  
+This mirrors a standard production architecture and improves confidence that local behavior matches deployment expectations.
+
+## MySQL 8 Data Layer
+
+MySQL 8 runs in a dedicated container with explicit environment variables and persistent named volume.  
+This provides:
+
+- modern SQL features;
+- reliable local persistence;
+- easy container lifecycle resets without data loss (if volume retained).
+
+## Container Networking + Volume Persistence
+
+By composing services in one network and persisting MySQL data in a named volume, the environment supports fast iteration for both backend and database work.
 
 ---
 
-## Content Source Note
+## Testing, Quality, and Developer Experience
 
-The original goal references `src/docker.docx` as raw source content.  
-In this workspace, that file was not present at implementation time, so structured educational content was authored directly into `LessonRepository`.
+## PHPUnit 12
 
-If you add `src/docker.docx`, you can:
+Modern PHPUnit enables comprehensive test coverage across:
 
-1. Extract text into structured topic blocks
-2. Replace corresponding lesson fields in `LessonRepository`
-3. Keep the same routes/views without architectural changes
+- HTTP routes/controllers;
+- service logic;
+- repository behavior;
+- authorization policies;
+- job and event dispatching.
+
+## Laravel Pint
+
+Pint enforces consistent style and formatting, reducing review friction and making diffs cleaner.
+
+## Mockery + FakerPHP
+
+These tools support robust automated testing:
+
+- Mockery for dependency behavior isolation;
+- Faker for realistic fixture generation.
+
+## Collision and Pail
+
+- **Collision** makes CLI errors readable and actionable.
+- **Pail** improves log observability during active development.
+
+Combined with concurrent process scripts, this creates a smooth local feedback loop.
+
+## Tinker
+
+Tinker provides a REPL environment to quickly test Eloquent models, services, and framework behavior interactively.
 
 ---
 
-## Setup and Run
+## Application Architecture Patterns Used
 
-From the `src` directory:
+This project applies several strong software engineering patterns:
+
+- **MVC** through controllers and Blade views;
+- **Repository pattern** for data access abstraction;
+- **Dependency inversion** via interfaces and service container bindings;
+- **Event-driven design** for decoupled analytics workflows;
+- **Job queue pattern** for background processing;
+- **Policy-based authorization** for controlled resource access;
+- **Layered responsibilities** (controllers/services/repositories/listeners/jobs).
+
+This combination keeps the codebase maintainable as features grow.
+
+---
+
+## Routing and Content Experience
+
+Main routes include:
+
+- `/` - platform introduction and onboarding context
+- `/learn` - index of all lessons
+- `/learn/{slug}` - lesson details by slug
+- `/roadmap` - progression tracking page
+- `/cheatsheet` - practical command references
+- `/projects` - real-world examples and snippets
+
+These pages form a complete educational path: discover -> learn -> reference -> practice.
+
+---
+
+## Build and Runtime Workflows
+
+From `src` you can use:
+
+- `composer setup` for one-command environment bootstrap (install deps, env creation, key generation, migration, frontend deps, build)
+- `composer dev` for parallel local processes (server, queue listener, logs, Vite)
+- `composer test` for test runs
+- `npm run dev` for frontend hot reload
+- `npm run build` for production assets
+
+This workflow design reduces onboarding friction and improves contributor productivity.
+
+---
+
+## Why This Stack Is "Cool" for This Site
+
+This stack is especially strong for an educational technology product because it combines:
+
+1. **Developer speed** (Laravel, Blade, Tailwind, Vite)
+2. **Infrastructure realism** (Nginx + PHP-FPM + MySQL in Docker)
+3. **Architecture readiness** (contracts, providers, services, policies, events, jobs)
+4. **Scalability path** (queues, analytics, cache-ready repository layer)
+5. **Long-term maintainability** (testing tools, formatting tools, explicit boundaries)
+
+In other words, the project is not a toy tutorial app; it is a practical foundation that can grow into a serious learning platform.
+
+---
+
+## Future Technology Expansion Ideas
+
+If you want to grow the platform further, this stack can naturally evolve into:
+
+- Redis-based queue/cache layer;
+- Horizon dashboard for queue monitoring;
+- user authentication and per-user progress tracking;
+- API endpoints for mobile or external clients;
+- full-text lesson search;
+- content editing panel;
+- multilingual lesson localization;
+- analytics dashboards for engagement metrics.
+
+Because current architecture already uses interfaces, events, jobs, and service abstractions, these additions can be introduced incrementally.
+
+---
+
+## Quick Start
+
+From `src`:
 
 ```bash
 composer install
 cp .env.example .env
 php artisan key:generate
-```
-
-If using Vite assets:
-
-```bash
 npm install
 npm run build
-```
-
-Run app:
-
-```bash
 php artisan serve --host=0.0.0.0 --port=8000
 ```
 
-Open:
-
-- `http://localhost:8000`
+Docker-based stack can be started from repository root with Compose when desired.
 
 ---
 
-## Vite Manifest Fallback
+## Multilingual Technology Hashtags
 
-To avoid `ViteManifestNotFoundException` in environments without built assets, the layout checks for:
+### English Hashtags
 
-- `public/build/manifest.json` or
-- `public/hot`
+#Laravel #PHP #PHP8 #Laravel13 #Blade #TailwindCSS #TailwindV4 #Vite #Vite8 #Docker #DockerCompose #Nginx #MySQL8 #PHPRuntime #PHPFPM #WebDevelopment #BackendDevelopment #FrontendDevelopment #FullStack #DevOps #CloudNative #Containerization #SoftwareArchitecture #RepositoryPattern #DependencyInjection #EventDriven #QueueJobs #AnalyticsPipeline #Authorization #PolicyBasedAccess #Testing #PHPUnit #CodeQuality #DeveloperExperience #OpenSource #EducationPlatform #LearningPlatform #TechStack #ModernWeb #ScalableArchitecture
 
-If neither exists, it falls back to Tailwind CDN so pages remain available.
+### Russian Hashtags
 
----
+#Ларавел #ПХП #ВебРазработка #Бэкенд #Фронтенд #Фуллстек #Докер #ДокерКомпоз #Контейнеры #Нгинкс #МайСКЛ #СовременнаяРазработка #АрхитектураПО #ПаттерныПроектирования #Репозиторий #ВнедрениеЗависимостей #СобытийнаяАрхитектура #ОчередиЗадач #Аналитика #Авторизация #Тестирование #ПХПЮнит #КачествоКода #ДевОпс #ОбразовательнаяПлатформа #Технологии #Программирование #РазработкаСайтов #ИнженерияПО #Масштабируемость
 
-## How to Add a New Lesson
+### Armenian Hashtags
 
-1. Open `app/Support/LessonRepository.php`
-2. Add a new `self::lesson(...)` entry
-3. Set `slug` and `next_slug` correctly
-4. Optionally include it in `topicPreview()`
-5. Add it to `roadmap()` if needed
-
-No route or controller changes are required unless you introduce new page types.
-
----
-
-## Customization Ideas
-
-- Add search/filter for lessons
-- Add markdown-based content files instead of inline arrays
-- Add admin CMS later (if content team editing is needed)
-- Add lesson progress per user after authentication is introduced
-- Add tests for route responses and key view rendering
+#Լարավել #ՓՀՓ #ՎեբՄշակում #Բեքենդ #Ֆրոնտենդ #ՖուլՍթեք #Դոքեր #Կոնտեյներներ #ԷնջինԷքս #ՄայԷսՔյուԷլ #Ծրագրավորում #ԾրագրայինՃարտարապետություն #Տեխնոլոգիաներ #ԿրթականՀարթակ #ՈւսուցմանՀարթակ #ԺամանակակիցՎեբ #ՄշակմանԳործընթաց #ԿոդիՈրակ #Թեստավորում #ԻվենթԱրխիտեկտուրա #ԱշխատանքներիՀերթ #Անալիտիկա #Մասշտաբայնություն #ԾառայություններիԴիզայն #ԴիվՕփս #ԲացԿոդ #ՎեբԾառայություններ #ԼոկալՄշակում #ԴևելոփերՓորձ
 
 ---
 
 ## License
 
-This project is built on Laravel (MIT).  
-Application content and custom code follow your repository policy.
+Framework foundation follows Laravel MIT licensing.  
+Project-specific content and custom logic follow your repository policy.
