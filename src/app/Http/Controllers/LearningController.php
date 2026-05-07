@@ -2,15 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\LessonRepositoryInterface;
+use App\Events\LessonViewed;
 use App\Models\Lesson;
-use App\Support\LessonRepository;
+use App\Services\LearningProgressService;
 use Illuminate\Support\Facades\Gate;
 
 class LearningController extends Controller
 {
+    public function __construct(
+        private readonly LessonRepositoryInterface $lessons,
+        private readonly LearningProgressService $progress,
+    ) {
+    }
+
     public function home()
     {
-        $topicPreview = collect(LessonRepository::topicPreview())
+        $topicPreview = collect($this->lessons->topicPreview())
             ->map(function (array $lesson): array {
                 $lesson['can_view'] = Gate::allows('view', Lesson::fromArray($lesson));
 
@@ -26,7 +34,7 @@ class LearningController extends Controller
 
     public function learnIndex()
     {
-        $lessons = collect(LessonRepository::all())
+        $lessons = collect($this->lessons->all())
             ->map(function (array $lesson): array {
                 $lesson['can_view'] = Gate::allows('view', Lesson::fromArray($lesson));
 
@@ -43,23 +51,31 @@ class LearningController extends Controller
 
     public function lesson(Lesson $lesson)
     {
-        $nextLesson = $lesson->next_slug ? LessonRepository::findBySlug($lesson->next_slug) : null;
+        $nextLesson = $lesson->next_slug ? $this->lessons->findBySlug($lesson->next_slug) : null;
+        $userId = auth()->id();
+
+        LessonViewed::dispatch($lesson, $userId);
+
+        if ($userId !== null) {
+            $this->progress->markCompleted($userId, $lesson->slug);
+        }
 
         return view('learn.show', [
             'lesson' => $lesson->toArray(),
-            'lessons' => LessonRepository::all(),
+            'lessons' => $this->lessons->all(),
             'activeSlug' => $lesson->slug,
             'nextLesson' => $nextLesson,
+            'progressPercent' => $userId !== null ? $this->progress->completionRate($userId) : null,
         ]);
     }
 
     public function roadmap()
     {
-        $roadmap = collect(LessonRepository::roadmap())
+        $roadmap = collect($this->lessons->roadmap())
             ->map(function (array $group): array {
                 $group['steps'] = collect($group['steps'])
                     ->map(function (array $step): array {
-                        $lesson = LessonRepository::findBySlug($step['slug']);
+                        $lesson = $this->lessons->findBySlug($step['slug']);
                         $step['can_view'] = $lesson
                             ? Gate::allows('view', Lesson::fromArray($lesson))
                             : false;
@@ -80,14 +96,14 @@ class LearningController extends Controller
     public function cheatsheet()
     {
         return view('cheatsheet', [
-            'cheatsheet' => LessonRepository::cheatsheet(),
+            'cheatsheet' => $this->lessons->cheatsheet(),
         ]);
     }
 
     public function projects()
     {
         return view('projects', [
-            'projects' => LessonRepository::projects(),
+            'projects' => $this->lessons->projects(),
         ]);
     }
 }
